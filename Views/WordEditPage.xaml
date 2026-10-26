@@ -4,10 +4,26 @@
              xmlns:vm="clr-namespace:GermanyGlossary.ViewModels"
              x:Class="GermanyGlossary.Views.WordEditPage"
              x:DataType="vm:WordEditViewModel"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
              Title="{Binding PageTitle}">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20,8,20,32" MaximumWidthRequest="640">
+        <VerticalStackLayout Padding="20,20,20,32" MaximumWidthRequest="640">
+
+            <!-- Header: close button + title -->
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                <Button Text="✕"
+                        Style="{StaticResource IconButton}"
+                        Command="{Binding CancelCommand}"
+                        SemanticProperties.Description="Закрити без збереження"
+                        VerticalOptions="Center" />
+                <Label Grid.Column="1"
+                       Text="{Binding PageTitle}"
+                       Style="{StaticResource PageTitle}"
+                       FontSize="24"
+                       VerticalOptions="Center" />
+            </Grid>
 
             <!-- Type -->
             <Label Text="Тип слова" Style="{StaticResource SectionHeader}" />
@@ -46,9 +62,9 @@
                 <FlexLayout Wrap="Wrap"
                             RadioButtonGroup.GroupName="article"
                             RadioButtonGroup.SelectedValue="{Binding Article}">
-                    <RadioButton Style="{StaticResource Chip}" Content="der" Value="der" />
-                    <RadioButton Style="{StaticResource Chip}" Content="die" Value="die" />
-                    <RadioButton Style="{StaticResource Chip}" Content="das" Value="das" />
+                    <RadioButton Style="{StaticResource ChipDer}" Content="der" Value="der" />
+                    <RadioButton Style="{StaticResource ChipDie}" Content="die" Value="die" />
+                    <RadioButton Style="{StaticResource ChipDas}" Content="das" Value="das" />
                 </FlexLayout>
 
                 <Label Text="Множина" Style="{StaticResource FieldLabel}" />
@@ -111,7 +127,14 @@
                 <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" />
             </Border>
 
-            <Button Text="Зберегти" Command="{Binding SaveCommand}" Margin="0,24,0,0" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,24,0,0">
+                <Button Text="Скасувати"
+                        Style="{StaticResource SecondaryButton}"
+                        Command="{Binding CancelCommand}" />
+                <Button Grid.Column="1"
+                        Text="Зберегти"
+                        Command="{Binding SaveCommand}" />
+            </Grid>
 
             <Button Text="Видалити слово"
                     Style="{StaticResource DangerButton}"

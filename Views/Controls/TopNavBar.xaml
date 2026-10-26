@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Centered pill navigation (like the strum.capital header). Used on Windows instead of the
+     native Shell tab bar, which WinUI always left-aligns. -->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GermanyGlossary.Views.Controls.TopNavBar">
+
+    <Border BackgroundColor="{StaticResource Surface}"
+            Stroke="{StaticResource Stroke}"
+            StrokeShape="RoundRectangle 24"
+            Padding="4"
+            HorizontalOptions="Center">
+        <HorizontalStackLayout Spacing="4">
+            <Border x:Name="WordsTab" StrokeThickness="0" StrokeShape="RoundRectangle 20" Padding="22,9">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnWordsTapped" />
+                </Border.GestureRecognizers>
+                <Label x:Name="WordsLabel" Text="Слова" FontFamily="OpenSansSemibold" FontSize="14" />
+            </Border>
+
+            <Border x:Name="CardsTab" StrokeThickness="0" StrokeShape="RoundRectangle 20" Padding="22,9">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCardsTapped" />
+                </Border.GestureRecognizers>
+                <Label x:Name="CardsLabel" Text="Повторення" FontFamily="OpenSansSemibold" FontSize="14" />
+            </Border>
+        </HorizontalStackLayout>
+    </Border>
+
+</ContentView>

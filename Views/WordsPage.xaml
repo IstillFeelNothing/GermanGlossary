@@ -2,15 +2,23 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:GermanyGlossary.ViewModels"
+             xmlns:controls="clr-namespace:GermanyGlossary.Views.Controls"
+             xmlns:local="clr-namespace:GermanyGlossary"
              x:Class="GermanyGlossary.Views.WordsPage"
              x:DataType="vm:WordsViewModel"
              Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="{OnPlatform Default=True, WinUI=False}"
              Title="Слова">
 
-    <Grid RowDefinitions="Auto,Auto,*" Padding="0,20,0,0">
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="0,20,0,0">
+
+        <!-- Centered top menu (Windows only; phones keep the bottom tab bar) -->
+        <controls:TopNavBar CurrentRoute="{x:Static local:AppShell.WordsRoute}"
+                            IsVisible="{OnPlatform Default=False, WinUI=True}"
+                            Margin="0,0,0,20" />
 
         <!-- Header: title + word count, "Додати" pill on the right -->
-        <Grid Padding="20,0" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+        <Grid Grid.Row="1" Padding="20,0" ColumnDefinitions="*,Auto" ColumnSpacing="12">
             <VerticalStackLayout VerticalOptions="Center" Spacing="2">
                 <Label Text="Словник" Style="{StaticResource PageTitle}" />
                 <Label Text="{Binding CountText}" Style="{StaticResource Muted}" />
@@ -23,7 +31,7 @@
         </Grid>
 
         <!-- Search -->
-        <Border Grid.Row="1" Style="{StaticResource Field}" Margin="20,20,20,8">
+        <Border Grid.Row="2" Style="{StaticResource Field}" Margin="20,20,20,8">
             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
                 <Label Text="⌕"
                        FontSize="22"
@@ -37,7 +45,7 @@
             </Grid>
         </Border>
 
-        <CollectionView Grid.Row="2"
+        <CollectionView Grid.Row="3"
                         ItemsSource="{Binding Words}"
                         SelectionMode="Single"
                         SelectedItem="{Binding SelectedWord}">
@@ -78,8 +86,17 @@
                         </VisualStateManager.VisualStateGroups>
 
                         <Border Style="{StaticResource Card}">
-                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="2">
-                                <Label FontSize="18" LineBreakMode="TailTruncation">
+                            <!-- No ColumnSpacing: the hidden stripe of non-nouns must not leave a gap; margins space things instead. -->
+                            <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto" RowSpacing="2">
+                                <!-- Article color stripe for nouns -->
+                                <BoxView Grid.RowSpan="2"
+                                         Margin="0,0,12,0"
+                                         WidthRequest="4"
+                                         CornerRadius="2"
+                                         IsVisible="{Binding HasArticle}"
+                                         Color="{Binding Article, Converter={StaticResource ArticleColor}}" />
+
+                                <Label Grid.Column="1" FontSize="18" LineBreakMode="TailTruncation">
                                     <Label.FormattedText>
                                         <FormattedString>
                                             <Span Text="{Binding ArticlePrefix}"
@@ -91,13 +108,15 @@
                                 </Label>
 
                                 <Label Grid.Row="1"
+                                       Grid.Column="1"
                                        Text="{Binding Translation}"
                                        Style="{StaticResource Muted}"
                                        LineBreakMode="TailTruncation" />
 
-                                <Border Grid.Column="1"
+                                <Border Grid.Column="2"
                                         Grid.RowSpan="2"
                                         Style="{StaticResource Badge}"
+                                        Margin="12,0,0,0"
                                         VerticalOptions="Center">
                                     <Label Text="{Binding KindLabel}"
                                            FontSize="12"

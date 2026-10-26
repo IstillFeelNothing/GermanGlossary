@@ -13,10 +13,19 @@ namespace GermanyGlossary.ViewModels
         public const string AdjectiveKind = "adjective";
         public const string PhraseKind = "phrase";
 
+        // Changing any of these after the page has loaded counts as an unsaved edit.
+        private static readonly HashSet<string> EditableProperties =
+        [
+            nameof(SelectedKind), nameof(Text), nameof(Translation), nameof(Example), nameof(Article),
+            nameof(Plural), nameof(Praeteritum), nameof(PartizipII), nameof(Auxiliary), nameof(IsSeparable),
+            nameof(Comparative), nameof(Superlative)
+        ];
+
         private readonly IWordRepository _wordRepository;
         private int? _wordId;
         private DateTime _createdAt;
         private bool _isLoaded;
+        private bool _isFilling;
 
         public WordEditViewModel(IWordRepository wordRepository)
         {
@@ -75,6 +84,16 @@ namespace GermanyGlossary.ViewModels
 
         public bool HasError => ErrorMessage is not null;
 
+        public bool IsDirty { get; private set; }
+
+        protected override void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            if (_isLoaded && !_isFilling && e.PropertyName is not null && EditableProperties.Contains(e.PropertyName))
+                IsDirty = true;
+        }
+
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             if (query.TryGetValue("id", out var value) && int.TryParse(value?.ToString(), out var id))
@@ -100,7 +119,30 @@ namespace GermanyGlossary.ViewModels
                 return;
             }
 
-            Fill(word);
+            _isFilling = true;
+            try
+            {
+                Fill(word);
+            }
+            finally
+            {
+                _isFilling = false;
+            }
+        }
+
+        // Leaves the page; asks first if there are unsaved changes.
+        [RelayCommand]
+        private async Task CancelAsync()
+        {
+            if (IsDirty)
+            {
+                var leave = await Shell.Current.DisplayAlertAsync(
+                    "Вийти без збереження?", "Внесені зміни буде втрачено.", "Вийти", "Залишитися");
+                if (!leave)
+                    return;
+            }
+
+            await Shell.Current.GoToAsync("..");
         }
 
         [RelayCommand]

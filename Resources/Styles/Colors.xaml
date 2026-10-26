@@ -27,6 +27,9 @@
     <Color x:Key="SuccessSoft">#12291D</Color>
     <Color x:Key="Danger">#F87171</Color>
     <Color x:Key="DangerSoft">#2C1518</Color>
+    <Color x:Key="Warning">#FBBF24</Color>
+    <Color x:Key="WarningSoft">#2A2210</Color>
+    <Color x:Key="PrimarySoft">#1D1A3D</Color>
 
     <!-- German article colors: der = blue, die = pink, das = green -->
     <Color x:Key="ArticleDer">#60A5FA</Color>

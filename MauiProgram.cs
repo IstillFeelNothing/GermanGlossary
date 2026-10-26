@@ -1,5 +1,6 @@
 ﻿using GermanyGlossary.Data;
 using GermanyGlossary.Repositories;
+using GermanyGlossary.Services;
 using GermanyGlossary.ViewModels;
 using GermanyGlossary.Views;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,11 @@ namespace GermanyGlossary
 
             builder.Services.AddSingleton<AppDatabase>();
             builder.Services.AddSingleton<IWordRepository, WordRepository>();
+            builder.Services.AddSingleton<IReviewStateRepository, ReviewStateRepository>();
+
+            builder.Services.AddSingleton<IClock, SystemClock>();
+            builder.Services.AddSingleton<ISpacedRepetitionAlgorithm, Sm2Algorithm>();
+            builder.Services.AddSingleton<IReviewSessionService, ReviewSessionService>();
 
             builder.Services.AddTransient<WordsViewModel>();
             builder.Services.AddTransient<WordsPage>();

@@ -17,5 +17,15 @@ namespace GermanyGlossary.Views
             base.OnAppearing();
             await _viewModel.LoadAsync();
         }
+
+        // Android hardware back: go through the same "unsaved changes?" check as the close button.
+        protected override bool OnBackButtonPressed()
+        {
+            if (!_viewModel.IsDirty)
+                return base.OnBackButtonPressed();
+
+            _viewModel.CancelCommand.Execute(null);
+            return true;
+        }
     }
 }

@@ -4,6 +4,8 @@ namespace GermanyGlossary.ViewModels
 {
     public record WordListItem(int Id, string? Article, string Text, string FullText, string Translation, string KindLabel)
     {
+        public bool HasArticle => Article is not null;
+
         // "der " (with a trailing space) for nouns, empty otherwise; shown in the article color.
         public string ArticlePrefix => Article is null ? string.Empty : $"{Article} ";
 

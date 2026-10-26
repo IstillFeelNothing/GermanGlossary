@@ -55,7 +55,14 @@ namespace GermanyGlossary.Repositories
         public async Task<bool> DeleteAsync(int id)
         {
             var connection = await _database.GetConnectionAsync();
-            var deleted = await connection.DeleteAsync<WordEntity>(id);
+            var deleted = 0;
+
+            // The review progress belongs to the word, so it goes together with it.
+            await connection.RunInTransactionAsync(tran =>
+            {
+                tran.Delete<ReviewStateEntity>(id);
+                deleted = tran.Delete<WordEntity>(id);
+            });
 
             return deleted > 0;
         }

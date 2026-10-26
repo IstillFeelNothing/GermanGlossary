@@ -37,6 +37,7 @@ namespace GermanyGlossary.Data
                 {
                     var connection = new SQLiteAsyncConnection(_databasePath, Flags);
                     await connection.CreateTableAsync<WordEntity>();
+                    await connection.CreateTableAsync<ReviewStateEntity>();
                     _connection = connection;
                 }
 
