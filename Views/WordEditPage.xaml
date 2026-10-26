@@ -6,78 +6,118 @@
              x:DataType="vm:WordEditViewModel"
              Title="{Binding PageTitle}">
 
-    <ContentPage.Resources>
-        <Style x:Key="FieldLabel" TargetType="Label">
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="Margin" Value="0,8,0,0" />
-            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
-        </Style>
-    </ContentPage.Resources>
-
     <ScrollView>
-        <VerticalStackLayout Padding="16" Spacing="4" MaximumWidthRequest="600">
+        <VerticalStackLayout Padding="20,8,20,32" MaximumWidthRequest="640">
 
-            <Label Text="Тип" Style="{StaticResource FieldLabel}" />
-            <Picker ItemsSource="{Binding Kinds}" SelectedIndex="{Binding SelectedKindIndex}" />
+            <!-- Type -->
+            <Label Text="Тип слова" Style="{StaticResource SectionHeader}" />
+            <FlexLayout Wrap="Wrap"
+                        RadioButtonGroup.GroupName="kind"
+                        RadioButtonGroup.SelectedValue="{Binding SelectedKind}">
+                <RadioButton Style="{StaticResource Chip}" Content="Іменник" Value="noun" />
+                <RadioButton Style="{StaticResource Chip}" Content="Дієслово" Value="verb" />
+                <RadioButton Style="{StaticResource Chip}" Content="Прикметник" Value="adjective" />
+                <RadioButton Style="{StaticResource Chip}" Content="Фраза" Value="phrase" />
+            </FlexLayout>
+
+            <!-- Main fields -->
+            <Label Text="Основне" Style="{StaticResource SectionHeader}" />
 
             <Label Text="Слово німецькою" Style="{StaticResource FieldLabel}" />
-            <Entry Text="{Binding Text}" Placeholder="Apfel" />
+            <Border Style="{StaticResource Field}">
+                <Entry Text="{Binding Text}" Placeholder="Apfel" />
+            </Border>
 
             <Label Text="Переклад" Style="{StaticResource FieldLabel}" />
-            <Entry Text="{Binding Translation}" Placeholder="яблуко" />
+            <Border Style="{StaticResource Field}">
+                <Entry Text="{Binding Translation}" Placeholder="яблуко" />
+            </Border>
 
             <Label Text="Приклад" Style="{StaticResource FieldLabel}" />
-            <Editor Text="{Binding Example}" Placeholder="Ich esse einen Apfel." AutoSize="TextChanges" />
+            <Border Style="{StaticResource Field}" Padding="10,4">
+                <Editor Text="{Binding Example}" Placeholder="Ich esse einen Apfel." AutoSize="TextChanges" />
+            </Border>
 
             <!-- Noun -->
-            <VerticalStackLayout IsVisible="{Binding IsNoun}" Spacing="4">
+            <VerticalStackLayout IsVisible="{Binding IsNoun}">
+                <Label Text="Іменник" Style="{StaticResource SectionHeader}" />
+
                 <Label Text="Артикль" Style="{StaticResource FieldLabel}" />
-                <Picker ItemsSource="{Binding Articles}" SelectedIndex="{Binding ArticleIndex}" />
+                <FlexLayout Wrap="Wrap"
+                            RadioButtonGroup.GroupName="article"
+                            RadioButtonGroup.SelectedValue="{Binding Article}">
+                    <RadioButton Style="{StaticResource Chip}" Content="der" Value="der" />
+                    <RadioButton Style="{StaticResource Chip}" Content="die" Value="die" />
+                    <RadioButton Style="{StaticResource Chip}" Content="das" Value="das" />
+                </FlexLayout>
 
                 <Label Text="Множина" Style="{StaticResource FieldLabel}" />
-                <Entry Text="{Binding Plural}" Placeholder="Äpfel" />
+                <Border Style="{StaticResource Field}">
+                    <Entry Text="{Binding Plural}" Placeholder="Äpfel" />
+                </Border>
             </VerticalStackLayout>
 
             <!-- Verb -->
-            <VerticalStackLayout IsVisible="{Binding IsVerb}" Spacing="4">
+            <VerticalStackLayout IsVisible="{Binding IsVerb}">
+                <Label Text="Дієслово" Style="{StaticResource SectionHeader}" />
+
                 <Label Text="Präteritum" Style="{StaticResource FieldLabel}" />
-                <Entry Text="{Binding Praeteritum}" Placeholder="kam an" />
+                <Border Style="{StaticResource Field}">
+                    <Entry Text="{Binding Praeteritum}" Placeholder="kam an" />
+                </Border>
 
                 <Label Text="Partizip II" Style="{StaticResource FieldLabel}" />
-                <Entry Text="{Binding PartizipII}" Placeholder="angekommen" />
+                <Border Style="{StaticResource Field}">
+                    <Entry Text="{Binding PartizipII}" Placeholder="angekommen" />
+                </Border>
 
                 <Label Text="Допоміжне дієслово" Style="{StaticResource FieldLabel}" />
-                <Picker ItemsSource="{Binding Auxiliaries}" SelectedIndex="{Binding AuxiliaryIndex}" />
+                <FlexLayout Wrap="Wrap"
+                            RadioButtonGroup.GroupName="auxiliary"
+                            RadioButtonGroup.SelectedValue="{Binding Auxiliary}">
+                    <RadioButton Style="{StaticResource Chip}" Content="haben" Value="haben" />
+                    <RadioButton Style="{StaticResource Chip}" Content="sein" Value="sein" />
+                </FlexLayout>
 
-                <HorizontalStackLayout Spacing="4" Margin="0,8,0,0">
-                    <CheckBox IsChecked="{Binding IsSeparable}" />
-                    <Label Text="Відокремлюваний префікс" VerticalOptions="Center" />
-                </HorizontalStackLayout>
+                <Border Style="{StaticResource Field}" Padding="8,0" Margin="0,8,0,0">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <CheckBox IsChecked="{Binding IsSeparable}" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="Відокремлюваний префікс" VerticalOptions="Center" />
+                    </Grid>
+                </Border>
             </VerticalStackLayout>
 
             <!-- Adjective -->
-            <VerticalStackLayout IsVisible="{Binding IsAdjective}" Spacing="4">
+            <VerticalStackLayout IsVisible="{Binding IsAdjective}">
+                <Label Text="Прикметник" Style="{StaticResource SectionHeader}" />
+
                 <Label Text="Comparative" Style="{StaticResource FieldLabel}" />
-                <Entry Text="{Binding Comparative}" Placeholder="besser" />
+                <Border Style="{StaticResource Field}">
+                    <Entry Text="{Binding Comparative}" Placeholder="besser" />
+                </Border>
 
                 <Label Text="Superlative" Style="{StaticResource FieldLabel}" />
-                <Entry Text="{Binding Superlative}" Placeholder="am besten" />
+                <Border Style="{StaticResource Field}">
+                    <Entry Text="{Binding Superlative}" Placeholder="am besten" />
+                </Border>
             </VerticalStackLayout>
 
-            <Label Text="{Binding ErrorMessage}"
-                   TextColor="#C62828"
-                   Margin="0,8,0,0"
-                   IsVisible="{Binding HasError}" />
+            <Border IsVisible="{Binding HasError}"
+                    BackgroundColor="{StaticResource DangerSoft}"
+                    Stroke="{StaticResource Danger}"
+                    StrokeShape="RoundRectangle 14"
+                    Padding="14,10"
+                    Margin="0,20,0,0">
+                <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource Danger}" />
+            </Border>
 
-            <Button Text="Зберегти" Command="{Binding SaveCommand}" Margin="0,16,0,0" />
+            <Button Text="Зберегти" Command="{Binding SaveCommand}" Margin="0,24,0,0" />
 
-            <Button Text="Видалити"
+            <Button Text="Видалити слово"
+                    Style="{StaticResource DangerButton}"
                     Command="{Binding DeleteCommand}"
                     IsVisible="{Binding IsEditMode}"
-                    BackgroundColor="Transparent"
-                    TextColor="#C62828"
-                    BorderColor="#C62828"
-                    BorderWidth="1" />
+                    Margin="0,12,0,0" />
         </VerticalStackLayout>
     </ScrollView>
 

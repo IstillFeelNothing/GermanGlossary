@@ -25,7 +25,13 @@ namespace GermanyGlossary.ViewModels
         public partial WordListItem? SelectedWord { get; set; }
 
         [ObservableProperty]
+        public partial string EmptyTitle { get; set; } = string.Empty;
+
+        [ObservableProperty]
         public partial string EmptyMessage { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        public partial string CountText { get; set; } = string.Empty;
 
         [RelayCommand]
         public async Task LoadAsync()
@@ -60,9 +66,25 @@ namespace GermanyGlossary.ViewModels
             foreach (var word in filtered)
                 Words.Add(word);
 
-            EmptyMessage = _allWords.Count == 0
-                ? "Словник порожній. Натисніть «Додати», щоб створити перше слово."
-                : "Нічого не знайдено.";
+            var isDictionaryEmpty = _allWords.Count == 0;
+            EmptyTitle = isDictionaryEmpty ? "Словник порожній" : "Нічого не знайдено";
+            EmptyMessage = isDictionaryEmpty
+                ? "Натисніть «Додати», щоб створити перше слово."
+                : "Спробуйте інший запит.";
+            CountText = FormatWordCount(_allWords.Count);
+        }
+
+        private static string FormatWordCount(int count)
+        {
+            // Ukrainian plural forms: 1 слово, 2–4 слова, 5+ слів (11–14 are always "слів").
+            var lastTwo = count % 100;
+            var last = count % 10;
+            var noun = lastTwo is >= 11 and <= 14 ? "слів"
+                : last == 1 ? "слово"
+                : last is >= 2 and <= 4 ? "слова"
+                : "слів";
+
+            return $"{count} {noun}";
         }
     }
 }

@@ -13,6 +13,10 @@ namespace GermanyGlossary.ViewModels
             _ => string.Empty
         };
 
+        // "der" / "die" / "das" for nouns, null for everything else.
+        public static string? ArticleOf(Word word) =>
+            word is Noun noun ? ArticleText(noun.Article) : null;
+
         // "der Apfel" for nouns, the plain text for everything else.
         public static string FullText(Word word) =>
             word is Noun noun ? $"{ArticleText(noun.Article)} {noun.Text}" : word.Text;

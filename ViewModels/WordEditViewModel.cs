@@ -7,11 +7,11 @@ namespace GermanyGlossary.ViewModels
 {
     public partial class WordEditViewModel : ObservableObject, IQueryAttributable
     {
-        // Picker indexes for SelectedKindIndex.
-        private const int NounIndex = 0;
-        private const int VerbIndex = 1;
-        private const int AdjectiveIndex = 2;
-        private const int PhraseIndex = 3;
+        // Values of the chip groups on the page (RadioButton.Value).
+        public const string NounKind = "noun";
+        public const string VerbKind = "verb";
+        public const string AdjectiveKind = "adjective";
+        public const string PhraseKind = "phrase";
 
         private readonly IWordRepository _wordRepository;
         private int? _wordId;
@@ -23,20 +23,16 @@ namespace GermanyGlossary.ViewModels
             _wordRepository = wordRepository;
         }
 
-        public IReadOnlyList<string> Kinds { get; } = ["Іменник", "Дієслово", "Прикметник", "Фраза"];
-        public IReadOnlyList<string> Articles { get; } = ["der", "die", "das"];
-        public IReadOnlyList<string> Auxiliaries { get; } = ["haben", "sein"];
-
         public bool IsEditMode => _wordId is not null;
         public string PageTitle => IsEditMode ? "Редагування" : "Нове слово";
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsNoun), nameof(IsVerb), nameof(IsAdjective))]
-        public partial int SelectedKindIndex { get; set; } = NounIndex;
+        public partial string SelectedKind { get; set; } = NounKind;
 
-        public bool IsNoun => SelectedKindIndex == NounIndex;
-        public bool IsVerb => SelectedKindIndex == VerbIndex;
-        public bool IsAdjective => SelectedKindIndex == AdjectiveIndex;
+        public bool IsNoun => SelectedKind == NounKind;
+        public bool IsVerb => SelectedKind == VerbKind;
+        public bool IsAdjective => SelectedKind == AdjectiveKind;
 
         [ObservableProperty]
         public partial string Text { get; set; } = string.Empty;
@@ -47,8 +43,9 @@ namespace GermanyGlossary.ViewModels
         [ObservableProperty]
         public partial string Example { get; set; } = string.Empty;
 
+        // "der" / "die" / "das"
         [ObservableProperty]
-        public partial int ArticleIndex { get; set; }
+        public partial string Article { get; set; } = "der";
 
         [ObservableProperty]
         public partial string Plural { get; set; } = string.Empty;
@@ -59,8 +56,9 @@ namespace GermanyGlossary.ViewModels
         [ObservableProperty]
         public partial string PartizipII { get; set; } = string.Empty;
 
+        // "haben" / "sein"
         [ObservableProperty]
-        public partial int AuxiliaryIndex { get; set; }
+        public partial string Auxiliary { get; set; } = "haben";
 
         [ObservableProperty]
         public partial bool IsSeparable { get; set; }
@@ -157,45 +155,50 @@ namespace GermanyGlossary.ViewModels
             switch (word)
             {
                 case Noun noun:
-                    SelectedKindIndex = NounIndex;
-                    ArticleIndex = (int)noun.Article;
+                    SelectedKind = NounKind;
+                    Article = WordFormatter.ArticleText(noun.Article);
                     Plural = noun.Plural ?? string.Empty;
                     break;
                 case Verb verb:
-                    SelectedKindIndex = VerbIndex;
+                    SelectedKind = VerbKind;
                     Praeteritum = verb.Praeteritum ?? string.Empty;
                     PartizipII = verb.PartizipII ?? string.Empty;
-                    AuxiliaryIndex = (int)verb.Auxiliary;
+                    Auxiliary = verb.Auxiliary == AuxiliaryVerb.Sein ? "sein" : "haben";
                     IsSeparable = verb.IsSeparable;
                     break;
                 case Adjective adjective:
-                    SelectedKindIndex = AdjectiveIndex;
+                    SelectedKind = AdjectiveKind;
                     Comparative = adjective.Comparative ?? string.Empty;
                     Superlative = adjective.Superlative ?? string.Empty;
                     break;
                 case Phrase:
-                    SelectedKindIndex = PhraseIndex;
+                    SelectedKind = PhraseKind;
                     break;
             }
         }
 
         private Word BuildWord()
         {
-            Word word = SelectedKindIndex switch
+            Word word = SelectedKind switch
             {
-                NounIndex => new Noun
+                NounKind => new Noun
                 {
-                    Article = (Article)ArticleIndex,
+                    Article = Article switch
+                    {
+                        "die" => Models.Article.Die,
+                        "das" => Models.Article.Das,
+                        _ => Models.Article.Der
+                    },
                     Plural = Optional(Plural)
                 },
-                VerbIndex => new Verb
+                VerbKind => new Verb
                 {
                     Praeteritum = Optional(Praeteritum),
                     PartizipII = Optional(PartizipII),
-                    Auxiliary = (AuxiliaryVerb)AuxiliaryIndex,
+                    Auxiliary = Auxiliary == "sein" ? AuxiliaryVerb.Sein : AuxiliaryVerb.Haben,
                     IsSeparable = IsSeparable
                 },
-                AdjectiveIndex => new Adjective
+                AdjectiveKind => new Adjective
                 {
                     Comparative = Optional(Comparative),
                     Superlative = Optional(Superlative)

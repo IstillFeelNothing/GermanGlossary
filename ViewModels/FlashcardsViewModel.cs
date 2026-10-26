@@ -20,8 +20,8 @@ namespace GermanyGlossary.ViewModels
         }
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(HasCard), nameof(FrontText), nameof(FullText),
-            nameof(Translation), nameof(Details), nameof(Example))]
+        [NotifyPropertyChangedFor(nameof(HasCard), nameof(FrontText), nameof(Article), nameof(ArticlePrefix),
+            nameof(KindLabel), nameof(Translation), nameof(Details), nameof(Example), nameof(HasExample))]
         public partial Word? CurrentWord { get; set; }
 
         [ObservableProperty]
@@ -38,16 +38,28 @@ namespace GermanyGlossary.ViewModels
         public partial string ProgressText { get; set; } = string.Empty;
 
         [ObservableProperty]
+        public partial double Progress { get; set; }
+
+        [ObservableProperty]
         public partial string SummaryText { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        public partial int KnownCount { get; set; }
+
+        [ObservableProperty]
+        public partial int MissedCount { get; set; }
 
         public bool HasCard => CurrentWord is not null;
         public bool IsFront => !IsFlipped;
 
         public string FrontText => CurrentWord?.Text ?? string.Empty;
-        public string FullText => CurrentWord is null ? string.Empty : WordFormatter.FullText(CurrentWord);
+        public string? Article => CurrentWord is null ? null : WordFormatter.ArticleOf(CurrentWord);
+        public string ArticlePrefix => Article is null ? string.Empty : $"{Article} ";
+        public string KindLabel => CurrentWord is null ? string.Empty : WordFormatter.KindLabel(CurrentWord);
         public string Translation => CurrentWord?.Translation ?? string.Empty;
         public string? Details => CurrentWord is null ? null : WordFormatter.GrammarDetails(CurrentWord);
         public string? Example => CurrentWord?.Example;
+        public bool HasExample => !string.IsNullOrWhiteSpace(Example);
 
         // Starts a session unless one is already in progress or showing its summary.
         public async Task EnsureStartedAsync()
@@ -107,13 +119,16 @@ namespace GermanyGlossary.ViewModels
         {
             IsFlipped = false;
             CurrentWord = _queue.Count > 0 ? _queue.Peek() : null;
-            ProgressText = $"Залишилось: {_queue.Count} з {_totalCount}";
+            var done = _totalCount - _queue.Count;
+            ProgressText = $"{done} / {_totalCount}";
+            Progress = _totalCount == 0 ? 0 : (double)done / _totalCount;
 
             if (CurrentWord is null && _totalCount > 0)
             {
                 IsFinished = true;
-                var knownFirstTime = _totalCount - _missedWordIds.Count;
-                SummaryText = $"Знали з першого разу: {knownFirstTime} з {_totalCount}";
+                MissedCount = _missedWordIds.Count;
+                KnownCount = _totalCount - MissedCount;
+                SummaryText = $"Ви пройшли всі {_totalCount} карток";
             }
         }
     }

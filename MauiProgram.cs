@@ -19,6 +19,8 @@ namespace GermanyGlossary
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+            BorderlessInputs.Configure();
+
             builder.Services.AddSingleton<AppDatabase>();
             builder.Services.AddSingleton<IWordRepository, WordRepository>();
 

@@ -4,84 +4,151 @@
              xmlns:vm="clr-namespace:GermanyGlossary.ViewModels"
              x:Class="GermanyGlossary.Views.FlashcardsPage"
              x:DataType="vm:FlashcardsViewModel"
+             Shell.NavBarIsVisible="False"
              Title="Картки">
 
-    <Grid Padding="16" MaximumWidthRequest="600">
+    <Grid RowDefinitions="Auto,*" Padding="20,20,20,20" MaximumWidthRequest="640">
 
-        <!-- No words yet -->
-        <Label IsVisible="{Binding IsEmpty}"
-               Text="Немає слів для повторення. Додайте слова на вкладці «Слова»."
-               HorizontalTextAlignment="Center"
-               VerticalOptions="Center"
-               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+        <!-- Header -->
+        <Grid ColumnDefinitions="*,Auto">
+            <Label Text="Картки" Style="{StaticResource PageTitle}" VerticalOptions="Center" />
+            <Label Grid.Column="1"
+                   Text="{Binding ProgressText}"
+                   IsVisible="{Binding HasCard}"
+                   Style="{StaticResource Muted}"
+                   FontFamily="OpenSansSemibold"
+                   VerticalOptions="Center" />
+        </Grid>
+
+        <!-- Empty state -->
+        <VerticalStackLayout Grid.Row="1" IsVisible="{Binding IsEmpty}" VerticalOptions="Center" Spacing="8">
+            <Label Text="Ще немає слів"
+                   FontFamily="OpenSansSemibold"
+                   FontSize="20"
+                   HorizontalTextAlignment="Center" />
+            <Label Text="Додайте слова на вкладці «Слова», і тут з'являться картки."
+                   Style="{StaticResource Muted}"
+                   HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
 
         <!-- Session finished -->
-        <VerticalStackLayout IsVisible="{Binding IsFinished}" Spacing="16" VerticalOptions="Center">
-            <Label Text="Готово!" FontSize="28" FontAttributes="Bold" HorizontalTextAlignment="Center" />
-            <Label Text="{Binding SummaryText}" HorizontalTextAlignment="Center" />
-            <Button Text="Почати знову" Command="{Binding RestartCommand}" HorizontalOptions="Center" />
+        <VerticalStackLayout Grid.Row="1" IsVisible="{Binding IsFinished}" VerticalOptions="Center" Spacing="20">
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Готово!" Style="{StaticResource PageTitle}" HorizontalTextAlignment="Center" />
+                <Label Text="{Binding SummaryText}" Style="{StaticResource Muted}" HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                <Border Style="{StaticResource Card}" Padding="16,18">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="{Binding KnownCount}"
+                               FontFamily="OpenSansSemibold"
+                               FontSize="32"
+                               TextColor="{StaticResource Success}"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="з першого разу" Style="{StaticResource Muted}" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="1" Style="{StaticResource Card}" Padding="16,18">
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="{Binding MissedCount}"
+                               FontFamily="OpenSansSemibold"
+                               FontSize="32"
+                               TextColor="{StaticResource Danger}"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="треба повторити" Style="{StaticResource Muted}" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <Button Text="Почати знову" Command="{Binding RestartCommand}" />
         </VerticalStackLayout>
 
         <!-- Active card -->
-        <Grid IsVisible="{Binding HasCard}" RowDefinitions="Auto,*,Auto" RowSpacing="16">
-            <Label Text="{Binding ProgressText}"
-                   HorizontalTextAlignment="Center"
-                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+        <Grid Grid.Row="1" IsVisible="{Binding HasCard}" RowDefinitions="Auto,*,Auto" RowSpacing="20" Padding="0,16,0,0">
+            <ProgressBar Progress="{Binding Progress}" HeightRequest="6" />
 
             <Border x:Name="Card"
                     Grid.Row="1"
                     Padding="24"
-                    StrokeThickness="0"
-                    StrokeShape="RoundRectangle 16"
-                    BackgroundColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource Gray900}}">
+                    BackgroundColor="{StaticResource Surface}"
+                    Stroke="{StaticResource Stroke}"
+                    StrokeShape="RoundRectangle 28">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnCardTapped" />
                 </Border.GestureRecognizers>
 
-                <Grid>
+                <Grid RowDefinitions="Auto,*,Auto">
+                    <Border Style="{StaticResource Badge}" HorizontalOptions="Start">
+                        <Label Text="{Binding KindLabel}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    </Border>
+
                     <!-- Front -->
-                    <VerticalStackLayout IsVisible="{Binding IsFront}" VerticalOptions="Center" Spacing="16">
-                        <Label Text="{Binding FrontText}"
-                               FontSize="36"
-                               FontAttributes="Bold"
-                               HorizontalTextAlignment="Center" />
-                        <Label Text="Торкніться, щоб побачити переклад"
-                               FontSize="13"
-                               HorizontalTextAlignment="Center"
-                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
-                    </VerticalStackLayout>
+                    <Label Grid.Row="1"
+                           IsVisible="{Binding IsFront}"
+                           Text="{Binding FrontText}"
+                           FontFamily="OpenSansSemibold"
+                           FontSize="40"
+                           HorizontalTextAlignment="Center"
+                           VerticalOptions="Center" />
+
+                    <Label Grid.Row="2"
+                           IsVisible="{Binding IsFront}"
+                           Text="Торкніться, щоб перевернути"
+                           FontSize="13"
+                           TextColor="{StaticResource TextTertiary}"
+                           HorizontalTextAlignment="Center" />
 
                     <!-- Back -->
-                    <VerticalStackLayout IsVisible="{Binding IsFlipped}" VerticalOptions="Center" Spacing="12">
-                        <Label Text="{Binding FullText}"
-                               FontSize="24"
-                               HorizontalTextAlignment="Center" />
+                    <VerticalStackLayout Grid.Row="1" IsVisible="{Binding IsFlipped}" VerticalOptions="Center" Spacing="14">
+                        <Label FontSize="22" HorizontalTextAlignment="Center">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{Binding ArticlePrefix}"
+                                          TextColor="{Binding Article, Converter={StaticResource ArticleColor}}"
+                                          FontFamily="OpenSansSemibold" />
+                                    <Span Text="{Binding FrontText}" TextColor="{StaticResource TextSecondary}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+
                         <Label Text="{Binding Translation}"
-                               FontSize="32"
-                               FontAttributes="Bold"
+                               FontFamily="OpenSansSemibold"
+                               FontSize="34"
                                HorizontalTextAlignment="Center" />
+
                         <Label Text="{Binding Details}"
-                               HorizontalTextAlignment="Center"
-                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray200}}" />
-                        <Label Text="{Binding Example}"
-                               FontAttributes="Italic"
-                               HorizontalTextAlignment="Center"
-                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+                               Style="{StaticResource Muted}"
+                               HorizontalTextAlignment="Center" />
+
+                        <Border IsVisible="{Binding HasExample}"
+                                BackgroundColor="{StaticResource SurfaceRaised}"
+                                StrokeThickness="0"
+                                StrokeShape="RoundRectangle 14"
+                                Padding="16,12"
+                                Margin="0,8,0,0">
+                            <Label Text="{Binding Example}"
+                                   FontAttributes="Italic"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   HorizontalTextAlignment="Center" />
+                        </Border>
                     </VerticalStackLayout>
                 </Grid>
             </Border>
 
+            <!-- Rating: shown only after the card is flipped -->
             <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding IsFlipped}">
                 <Button Text="Не знаю"
-                        Command="{Binding DontKnowCommand}"
-                        BackgroundColor="#C62828"
-                        TextColor="White" />
+                        Style="{StaticResource DontKnowButton}"
+                        Command="{Binding DontKnowCommand}" />
                 <Button Grid.Column="1"
                         Text="Знаю"
-                        Command="{Binding KnowCommand}"
-                        BackgroundColor="#2E7D32"
-                        TextColor="White" />
+                        Style="{StaticResource KnowButton}"
+                        Command="{Binding KnowCommand}" />
             </Grid>
+
+            <!-- Keeps the card the same height before and after the flip -->
+            <BoxView Grid.Row="2" IsVisible="{Binding IsFront}" HeightRequest="56" Color="Transparent" />
         </Grid>
     </Grid>
 
