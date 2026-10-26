@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GermanyGlossary.ViewModels"
+             x:Class="GermanyGlossary.Views.FlashcardsPage"
+             x:DataType="vm:FlashcardsViewModel"
+             Title="Картки">
+
+    <Grid Padding="16" MaximumWidthRequest="600">
+
+        <!-- No words yet -->
+        <Label IsVisible="{Binding IsEmpty}"
+               Text="Немає слів для повторення. Додайте слова на вкладці «Слова»."
+               HorizontalTextAlignment="Center"
+               VerticalOptions="Center"
+               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+
+        <!-- Session finished -->
+        <VerticalStackLayout IsVisible="{Binding IsFinished}" Spacing="16" VerticalOptions="Center">
+            <Label Text="Готово!" FontSize="28" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+            <Label Text="{Binding SummaryText}" HorizontalTextAlignment="Center" />
+            <Button Text="Почати знову" Command="{Binding RestartCommand}" HorizontalOptions="Center" />
+        </VerticalStackLayout>
+
+        <!-- Active card -->
+        <Grid IsVisible="{Binding HasCard}" RowDefinitions="Auto,*,Auto" RowSpacing="16">
+            <Label Text="{Binding ProgressText}"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+
+            <Border x:Name="Card"
+                    Grid.Row="1"
+                    Padding="24"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 16"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource Gray900}}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCardTapped" />
+                </Border.GestureRecognizers>
+
+                <Grid>
+                    <!-- Front -->
+                    <VerticalStackLayout IsVisible="{Binding IsFront}" VerticalOptions="Center" Spacing="16">
+                        <Label Text="{Binding FrontText}"
+                               FontSize="36"
+                               FontAttributes="Bold"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="Торкніться, щоб побачити переклад"
+                               FontSize="13"
+                               HorizontalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+                    </VerticalStackLayout>
+
+                    <!-- Back -->
+                    <VerticalStackLayout IsVisible="{Binding IsFlipped}" VerticalOptions="Center" Spacing="12">
+                        <Label Text="{Binding FullText}"
+                               FontSize="24"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="{Binding Translation}"
+                               FontSize="32"
+                               FontAttributes="Bold"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="{Binding Details}"
+                               HorizontalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray200}}" />
+                        <Label Text="{Binding Example}"
+                               FontAttributes="Italic"
+                               HorizontalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding IsFlipped}">
+                <Button Text="Не знаю"
+                        Command="{Binding DontKnowCommand}"
+                        BackgroundColor="#C62828"
+                        TextColor="White" />
+                <Button Grid.Column="1"
+                        Text="Знаю"
+                        Command="{Binding KnowCommand}"
+                        BackgroundColor="#2E7D32"
+                        TextColor="White" />
+            </Grid>
+        </Grid>
+    </Grid>
+
+</ContentPage>

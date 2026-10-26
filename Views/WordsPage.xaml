@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GermanyGlossary.ViewModels"
+             x:Class="GermanyGlossary.Views.WordsPage"
+             x:DataType="vm:WordsViewModel"
+             Title="Слова">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Додати" Command="{Binding AddCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto,*">
+        <SearchBar Placeholder="Пошук слова або перекладу"
+                   Text="{Binding SearchText}"
+                   Margin="8,8,8,0" />
+
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Words}"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding SelectedWord}">
+            <CollectionView.EmptyView>
+                <Label Text="{Binding EmptyMessage}"
+                       Margin="24"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:WordListItem">
+                    <Grid Padding="16,12" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="12">
+                        <Label Text="{Binding FullText}"
+                               FontSize="18"
+                               FontAttributes="Bold" />
+                        <Label Grid.Row="1"
+                               Text="{Binding Translation}"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+                        <Label Grid.Column="1"
+                               Grid.RowSpan="2"
+                               Text="{Binding KindLabel}"
+                               FontSize="12"
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+
+</ContentPage>
