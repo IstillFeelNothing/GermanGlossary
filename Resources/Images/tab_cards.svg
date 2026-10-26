@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Tab icon "Повторення": two stacked cards. -->
+<svg width="24" height="24" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round">
+        <rect x="7" y="3" width="13" height="16" rx="2.5" />
+        <path d="M 4 7.5 V 18.5 A 2.5 2.5 0 0 0 6.5 21 H 15" stroke-linecap="round" />
+    </g>
+</svg>

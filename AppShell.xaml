@@ -11,11 +11,13 @@
     <TabBar>
         <ShellContent
             Title="Слова"
+            Icon="tab_words.png"
             ContentTemplate="{DataTemplate views:WordsPage}"
             Route="{x:Static local:AppShell.WordsRoute}" />
 
         <ShellContent
             Title="Повторення"
+            Icon="tab_cards.png"
             ContentTemplate="{DataTemplate views:FlashcardsPage}"
             Route="{x:Static local:AppShell.CardsRoute}" />
     </TabBar>
